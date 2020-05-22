@@ -28,11 +28,15 @@ func (baseSerializer *baseSerializer) stepIn(ionValue interface{}) {
 	panic("implement me")
 }
 
-func (baseSerializer *baseSerializer) digest() []byte {
+//func (baseSerializer *baseSerializer) stepOut() {
+//	panic("implement me")
+//}
+
+func (baseSerializer *baseSerializer) sum() []byte {
 	panic("implement me")
 }
 
-func (baseSerializer *baseSerializer) handleFieldName(ionValue interface{}) {
+func (baseSerializer *baseSerializer) handleFieldName(ionValue interface{}) error {
 	panic("implement me")
 }
 

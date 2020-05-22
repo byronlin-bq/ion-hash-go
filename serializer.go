@@ -18,15 +18,15 @@ package ionhash
 import "github.com/amzn/ion-go/ion"
 
 type serializer interface {
-	scalar(ionValue interface{})
+	scalar(ionValue interface{}) error
 
 	stepIn(ionValue interface{})
 
 	stepOut()
 
-	digest() []byte
+	sum() []byte
 
-	handleFieldName(ionValue interface{})
+	handleFieldName(ionValue interface{}) error
 
 	update(bytes []byte)
 

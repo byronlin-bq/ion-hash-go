@@ -22,22 +22,39 @@ type structSerializer struct {
 	fieldHashes      [][]byte
 }
 
-func newStructSerializer(hashFunction IonHasher, depth int, hashFunctionprovider IonHasherProvider) serializer {
+func newStructSerializer(hashFunction IonHasher, depth int, hashFunctionProvider IonHasherProvider) serializer {
 	return &structSerializer{
 		baseSerializer:   baseSerializer{hashFunction: hashFunction, depth: depth},
-		scalarSerializer: newScalarSerializer(hashFunctionprovider.newHasher(), depth+1)}
+		scalarSerializer: newScalarSerializer(hashFunctionProvider.newHasher(), depth+1)}
 }
 
-func (structSerializer *structSerializer) scalar(ionValue interface{}) {
-	panic("implement me")
+func (structSerializer *structSerializer) scalar(ionValue interface{}) error {
+	handleFieldNameErr := structSerializer.scalarSerializer.handleFieldName(ionValue)
+	if handleFieldNameErr != nil {
+		return handleFieldNameErr
+	}
+
+	scalarErr := structSerializer.scalarSerializer.scalar(ionValue)
+	if scalarErr != nil {
+		return scalarErr
+	}
+
+	sum := structSerializer.sum()
+	structSerializer.appendFieldHash(sum)
+	return nil
 }
 
 func (structSerializer *structSerializer) stepOut() {
-	panic("implement me")
+	//compareBytes(structSerializer.fieldHashes)
+
+	for i := 0; i < len(structSerializer.fieldHashes); i++ {
+		structSerializer.update(escape(structSerializer.fieldHashes[i]))
+	}
+	structSerializer.scalarSerializer.stepOut()
 }
 
-func (structSerializer *structSerializer) appendFieldHash() {
-	panic("implement me")
+func (structSerializer *structSerializer) appendFieldHash(sum []byte) {
+	structSerializer.fieldHashes = append(structSerializer.fieldHashes, sum)
 }
 
 func compareBytes(bs1, bs2 []byte) []int16 {
