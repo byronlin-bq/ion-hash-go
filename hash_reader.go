@@ -66,23 +66,33 @@ func (hashReader *hashReader) Next() bool {
 	hashReader.err = nil
 
 	if hashReader.currentType != ion.NoType {
-		if ion.IsScalar(hashReader.currentType) || hashReader.IsNull() {
+		if ion.IsContainer(hashReader.currentType) {
+			if hashReader.IsNull() {
+				hashReader.err = hashReader.hasher.scalar(hashReader)
+				if hashReader.err != nil {
+					return false
+				}
+			} else {
+				hashReader.err = hashReader.StepIn()
+				if hashReader.err != nil {
+					return false
+				}
+
+				hashReader.err = hashReader.traverse()
+				if hashReader.err != nil {
+					return false
+				}
+
+				hashReader.err = hashReader.StepOut()
+				if hashReader.err != nil {
+					return false
+				}
+			}
+
+		}
+
+		if ion.IsScalar(hashReader.currentType) {
 			hashReader.err = hashReader.hasher.scalar(hashReader)
-			if hashReader.err != nil {
-				return false
-			}
-		} else {
-			hashReader.err = hashReader.StepIn()
-			if hashReader.err != nil {
-				return false
-			}
-
-			hashReader.err = hashReader.traverse()
-			if hashReader.err != nil {
-				return false
-			}
-
-			hashReader.err = hashReader.StepOut()
 			if hashReader.err != nil {
 				return false
 			}
