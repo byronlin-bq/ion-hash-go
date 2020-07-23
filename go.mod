@@ -1,4 +1,4 @@
-module github.com/amzn/ion-hash-go
+module github.com/byronlin-bq/ion-hash-go
 
 go 1.13
 
